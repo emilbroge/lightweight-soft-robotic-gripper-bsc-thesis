@@ -1,0 +1,8 @@
+testobject,orientation,initgrasp,completedtrajectory,total
+Sponge,Around middle length side,10,10,10
+Cloth,,10,10,10
+Egg,around the short side wrap,10,10,10
+Brick,,10,10,10
+Fork,failure is very much determined by where the fingers meet the fork when the fork was towards the lower part of the gripper it did not pinch or wrap it this could be random because of the softness or something general,7,6,10
+Pill container,pinch with much surface area,10,10,10
+Tape,"first 5 were around the tape smooth side second 5 were inside the tape",9,8,10
