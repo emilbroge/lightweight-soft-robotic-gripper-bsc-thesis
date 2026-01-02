@@ -1,0 +1,12 @@
+object_id,shape,long,short,mass,surface
+1,box,20,20,5,plain
+2,box,40,20,8,plain
+3,box,60,20,11,plain
+4,box,40,20,8,fuzzy
+5,box,20,20,5,fuzzy
+6,box,60,60,37,plain
+7,box,50,4,5,plain
+8,sphere,50,50,18,plain
+9,sphere,70,70,44,plain
+10,sphere,30,30,5,plain
+11,sphere,30,30,5,fuzzy
