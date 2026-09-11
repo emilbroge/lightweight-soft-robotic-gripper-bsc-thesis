@@ -57,6 +57,7 @@ void setup() {
 
   // Use UART port of DYNAMIXEL Shield to debug.
   DEBUG_SERIAL.begin(115200);
+  DEBUG_SERIAL.print("Test test");
 
   // Initialize motors
   dxl_init();
