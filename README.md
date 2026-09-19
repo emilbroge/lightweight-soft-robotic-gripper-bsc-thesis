@@ -53,12 +53,12 @@ The microcontroller firmware is set up in `code/bsc-gripper/`. It handles motor 
 - **Firmware Architecture & Motor Tuning:** See the [Firmware Deep-Dive](code/bsc-gripper/README.md) for pinouts, state machine explanations, and tuning constants in `config.h`.
 
 ---
-
 ## 4. Experimental Data (`raw_data/`)
 
 All raw test data from our validation trials are available in `raw_data/`:
 - `transmission_test/`: Tendon transmission efficiency measurements and `transmission_test.py` to calculate friction coefficients ($\mu$).
 - `motor_performance_test/`: Current and force measurements for XL330 and XL430 servos.
+- `finger_mount_test/`: Structural and mechanical load data for the finger mount.
 - `payload_test/`: Pull-force test data across 11 test shapes (`test_objects.csv` describes dimensions and weights).
 - `success_rate/`: Grasp trials (`data_succes.csv`) on real everyday objects.
 

@@ -2,6 +2,8 @@
 
 This folder contains the PlatformIO firmware project targeting an Arduino Uno (`env:uno` in `platformio.ini`) equipped with a Robotis DYNAMIXEL Shield.
 
+> **Legacy Firmware Note:** The earlier non-PlatformIO firmware (`code/main_firmware_version/`) has been deprecated and superseded by this project.
+
 ---
 
 ## 1. Project Structure & Responsibilities
@@ -9,7 +11,7 @@ This folder contains the PlatformIO firmware project targeting an Arduino Uno (`
 | File | Purpose / Responsibility |
 |---|---|
 | `src/main.cpp` | Main loop, button debounce, state machine, periodic sampling, and serial formatting. |
-| `src/config.h` | All hardware pins, tuning parameters, motor IDs, safety limits (PWM/Current) and timing periods. |
+| `src/config.h` | All hardware pins, tuning parameters, motor IDs, safety limits (PWM/Current), load cell scale factor, and timing periods. |
 | `src/dynamixel_control.{h,cpp}` | DYNAMIXEL communication via `Dynamixel2Arduino`, sync-write packet packing, feedback reading, and the grip state machine (`dxl_update_state()`). |
 | `src/load_cell.{h,cpp}` | Reading and calibrating the optional HX711 load cell sensor (active when `debugLoadCells = true`). |
 | `src/serial_config.{h,cpp}` | Configures `SoftwareSerial` pins for telemetry output. |
@@ -24,14 +26,18 @@ The Arduino Uno has only one hardware serial port (`Serial`, pins 0 and 1). This
 - Telemetry is transmitted via `SoftwareSerial` on **Pins 7 (RX)** and **8 (TX)** at **115200 baud**.
 - To read debug logs on your PC, connect an external USB-to-UART adapter (FTDI / CP2102) to pins 7 and 8.
 
-### 2. Motor Ping Loop (`dxl_init()`)
+### 2. Motor Power & Voltage Verification
+> **Critical:** Always check your servo model's operating voltage before applying bench power!
+> - **XL330 series:** Rated for **5.0V** (operating range 3.7V – 6.0V). Connecting a 12V supply will destroy them.
+> - **XL430 series:** Rated for **11.1V – 12.0V**.
+
 During startup, `dxl_init()` executes a blocking `while` loop:
 ```cpp
 while (!dxl.ping(DXL_ID_FLEXOR) || !dxl.ping(DXL_ID_EXTENSOR)) {
     delay(1000);
 }
 ```
-If the motors do not have external power connected to the shield, or if the motor IDs do not match `DXL_ID_FLEXOR` (`9`) and `DXL_ID_EXTENSOR` (`8`), the board will hang here indefinitely.
+If the motors do not have external power connected to the shield screw terminals, or if the motor IDs do not match `DXL_ID_FLEXOR` (`9`) and `DXL_ID_EXTENSOR` (`8`), the board will hang here indefinitely.
 
 ---
 
@@ -77,6 +83,7 @@ The gripper uses an antagonistic PWM profile across five states defined in `dyna
 - `CLOSING_FLEX_SLOPE` & `CLOSING_FLEX_LIMIT`: Adjust how quickly and firmly the hand initially curls.
 - `HOLDING_FLEX_LIMIT` (default `250`): Steady-state holding power. Keep this low to avoid overheating the XL330 motors during continuous grasps.
 - `SAMPLING_PERIOD_MS` (default `100`): Frequency of state updates. *Note: If using the HX711 load cell, this must remain >= 100 ms due to the 10 SPS ADC conversion rate*.
+- `C_LOAD_CELL_SCALE`: Calibration factor for the HX711 amplifier. If you mount a new strain gauge beam, calibrate this value using known test weights.
 
 ---
 

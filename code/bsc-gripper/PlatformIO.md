@@ -2,7 +2,7 @@
 
 This guide covers setting up your development environment, building, flashing, and monitoring the gripper firmware using **PlatformIO**.
 
-Some of this text is written by us, some is AI generated, so take it with a grain of salt.
+> **Note on Legacy Code:** The older codebase in `code/main_firmware_version/` has been completely superseded by this PlatformIO project. All future development, bug fixes, and testing should occur inside `code/bsc-gripper/`.
 
 ---
 
