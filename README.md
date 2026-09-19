@@ -48,7 +48,7 @@ All step-by-step guides and CAD drawings are organized in the `documentation/` f
 
 The microcontroller firmware is set up in `code/bsc-gripper/`. It handles motor communication, runs an automatic grip sequence, and streams diagnostic data.
 
-- We use **PlatformIO** (via the VS Code extension) to compile and upload code automatically.
+- We use **PlatformIO** (via the VS Code extension) to compile and upload code automatically. [Setting up PlatformIO](code/bsc-gripper/PlatformIO.md)
 - **Wiring & Pinout:** See the [Wiring Setup in documentation](documentation/README.md#2-electronics--wiring-setup).
 - **Firmware Architecture & Motor Tuning:** See the [Firmware Deep-Dive](code/bsc-gripper/README.md) for pinouts, state machine explanations, and tuning constants in `config.h`.
 
