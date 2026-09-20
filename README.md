@@ -1,171 +1,88 @@
-# Design and Development of a Bio-Inspired, Lightweight Soft Robotic Gripper
+# Bio-Inspired, Lightweight Soft Robotic Gripper
 
-Bachelor thesis project by Mads and Emil, DTU 2026.
+A lightweight, tendon-driven soft robotic gripper developed as a Bachelor’s thesis at DTU (Neuro Robotics Technology Lab) by Mads August Claussen and Emil Broge Johansen.
 
-This repository contains the 3D printing/casting files, the Arduino firmware, and the raw
-experimental data collected for the gripper. It is written so that a future student can pick
-the project back up: print/cast the parts, wire up the electronics, flash the firmware, and
-reproduce (or extend) the tests.
+The goal of this project was to design a compliant gripper that weighs almost nothing (only 37 g at the wrist!) so it can be mounted onto soft, low-payload continuum robotic arms without weighing them down. Instead of rigid fingers with lots of gears, it uses flexible 3D-printed fingers shaped like an octopus tentacle that wrap gently around objects of different shapes and sizes.
 
-![Gripper](gripper.jpg)
+This repository contains the 3D printing/casting files, the Arduino firmware, and the raw experimental data collected for the gripper. It is written so that a future student can pick the project back up: print/cast the parts, wire up the electronics, flash the firmware, and reproduce (or extend) the tests.
 
-## Repository layout
+https://github.com/user-attachments/assets/c0556c12-12d1-4bf8-a20e-e9f583e94eb2
 
-```
-.
-├── 3d_files/            STEP + STL files for all printed/cast parts
-├── code/
-│   └── bsc-gripper/     PlatformIO firmware project (Arduino Uno)
-├── raw_data/            CSV logs + a couple of analysis scripts from testing
-└── gripper.jpg          Photo of the assembled gripper
-```
+*(If you are viewing this locally, check out `documentation/gripper-showcase-vid.mp4` and `documentation/gripper_being_operated_and_powered_off.mp4` to see it in action!)*
 
-## 1. Hardware overview
+---
 
-The gripper is a single tendon-driven finger, actuated by two DYNAMIXEL smart servos (one
-"flexor" and one "extensor" tendon) pulling on a soft finger through a cable-drum mechanism.
+## 1. System Architecture & Mechanism
 
-Bill of materials, as far as it can be reconstructed from the code and test data — **please
-correct/extend this list once you've rebuilt the setup**, since the full BOM lives in the
-thesis report, not in this repo:
+To keep the hand as light as possible, we separated the "muscles" from the "fingers":
 
-| Part | Notes |
-|---|---|
-| Arduino Uno | Runs the firmware in `code/bsc-gripper` |
-| DYNAMIXEL Shield for Arduino Uno | Stacks on top of the Uno, handles the DYNAMIXEL bus + external power |
-| 2x DYNAMIXEL X-series servo (e.g. XL330-M288 / XL430-W250) | One flexor, one extensor tendon. IDs must be set to **8 (extensor)** and **9 (flexor)** beforehand (see below) |
-| External power supply | For the DYNAMIXEL Shield's motor power input — voltage must match the servos you use (see §3) |
-| HX711 load-cell amplifier + load cell | Optional, used for grip-force logging (disabled by default, see `debugLoadCells` in `config.h`) |
-| Momentary push button | Manually toggles grip/release |
-| 3D printed/cast finger + mounting hardware | See `3d_files/` below |
+![Gripper System Overview|300](documentation/overview-block-diagram.png)
 
-### 3D printed / cast parts (`3d_files/`)
+- **External Actuator Box:** Two smart servo motors sit away from the moving arm. One pulls the "flexor" tendon to close the grip, and the other pulls an "extensor" tendon to open it and add stiffness.
+- **Bowden Cable Transmission:** The pulling force travels through slick PTFE tubes via strong polyethylene cords (Dyneema).
+- **Cable Drum Wrist:** Inside the mount, small spools turn linear cable pulling into rotation without needing a bulky mechanism.
+- **Octopus-Inspired Fingers:** The fingers are printed out of flexible TPU with built-in bending joints. They follow a logarithmic spiral shape so they naturally wrap around objects instead of pinching at a stiff angle.
+- **Silicone Skin:** A soft silicone layer gives the fingers the grip they need so objects don't slip out.
 
-Both `.step` (editable CAD) and `.stl` (ready-to-slice) versions of every part are included.
+**Below the gripper can be seen being operated.**
 
-| File | Purpose (inferred from naming — verify against the thesis) |
-|---|---|
-| `Finger mold.stl/.step` | Mold used to cast the soft silicone finger |
-| `Finger - with supports.stl/.step` | The soft finger part, with support structures already modeled in for casting/printing |
-| `Finger - without supports.stl/.step` | Same finger part without supports (use if your slicer/printer generates its own supports) |
-| `Finger mount.step` | Full assembly reference for the rigid finger mount |
-| `Finger mount - Small drum half.stl/.step` | One half of the tendon-winding drum, mounted on the smaller (extensor) servo horn |
-| `Finger mount - Large drum half.stl/.step` | One half of the tendon-winding drum, mounted on the larger (flexor) servo horn |
-| `Finger mount - Arm Interface Cap.stl/.step` | Cap that interfaces the mount to the robot arm / test rig |
+https://github.com/user-attachments/assets/960f5932-b7c9-4243-a79a-f50e997e1e70
 
-**Before you print:** open the `.step` files in your CAD tool of choice to confirm dimensions
-and tolerances still make sense for your printer/material, and note down (in this README) what
-material/printer settings actually worked — that information is not currently captured
-anywhere in the repo.
+---
 
-## 2. Firmware (`code/bsc-gripper`)
+## 2. Hardware Build Guide
 
-This is a [PlatformIO](https://platformio.org/) project targeting the Arduino Uno
-(`env:uno` in `platformio.ini`). It uses two libraries, pulled automatically by PlatformIO:
+The entire physical build uses affordable 3D-printed parts, standard hobbyist bearings, and two smart servos. The brain of the setup is an Arduino Uno fitted with a motor shield.
 
-- [`robotis-git/Dynamixel2Arduino`](https://github.com/ROBOTIS-GIT/Dynamixel2Arduino) — communication with the DYNAMIXEL servos
-- [`RobTillaart/HX711`](https://github.com/RobTillaart/HX711) — load cell amplifier
+All step-by-step guides and CAD drawings are organized in the `documentation/` folder:
+- **Parts List & Costs:** See the [Bill of Materials (PDF)](documentation/bill_of_materials_compressed.pdf)
+- **Step-by-Step Mechanical Assembly:** See the [Assembly Guide (PDF)](documentation/assembly_instructions_compressed.pdf)
+- **Fabrication & Print Specs:** See the [Hardware & Fabrication Guide](documentation/README.md#1-3d-printing--fabrication)
+- **Full Thesis Report:** Read [Full BSc Report (PDF)](documentation/Full_BSc_Report_compressed_prepress.pdf) for the academic background, math, and design decisions.
 
-### Source files
+---
 
-| File | Responsibility |
-|---|---|
-| `src/main.cpp` | Setup/loop, grip-button handling, periodic sampling & debug printing |
-| `src/config.h` | All tunable constants: pin numbers, motor IDs, current/PWM limits, grip-state timing & control gains |
-| `src/dynamixel_control.{h,cpp}` | DYNAMIXEL init, sync-write of goal PWM, feedback reading, and the grip state machine (`GRIP_OPEN → GRIP_CLOSING → GRIP_TIGHTEN → GRIP_HOLDING → GRIP_RELEASING`) |
-| `src/load_cell.{h,cpp}` | HX711 init & reading (only active if `debugLoadCells = true` in `config.h`) |
-| `src/serial_config.{h,cpp}` | Defines which UART is used for DYNAMIXEL vs. debug printing |
+## 3. Code & Electronics Build Guide
 
-### Setting up PlatformIO
+The microcontroller firmware is set up in `code/bsc-gripper/`. It handles motor communication, runs an automatic grip sequence, and streams diagnostic data.
 
-1. Install [VS Code](https://code.visualstudio.com/) and the **PlatformIO IDE** extension
-   (already recommended in `.vscode/extensions.json` — VS Code should prompt you to install it
-   when you open `code/bsc-gripper`).
-   - Alternatively, install the [PlatformIO Core CLI](https://docs.platformio.org/en/latest/core/installation/index.html).
-2. Open the folder `code/bsc-gripper` in VS Code (not the repo root — PlatformIO looks for
-   `platformio.ini` in the opened folder).
-3. Let PlatformIO install the `atmelavr` platform and the two libraries from `platformio.ini`
-   on first build (it does this automatically).
+- We use **PlatformIO** (via the VS Code extension) to compile and upload code automatically. [Setting up PlatformIO](code/bsc-gripper/PlatformIO.md)
+- **Wiring & Pinout:** See the [Wiring Setup in documentation](documentation/README.md#2-electronics--wiring-setup).
+- **Firmware Architecture & Motor Tuning:** See the [Firmware Deep-Dive](code/bsc-gripper/README.md) for pinouts, state machine explanations, and tuning constants in `config.h`.
 
-### Building & uploading
+---
+## 4. Experimental Data (`raw_data/`)
 
-Using the PlatformIO toolbar in VS Code (checkmark = build, arrow = upload), or from the CLI
-inside `code/bsc-gripper`:
+All raw test data from our validation trials are available in `raw_data/`:
+- `transmission_test/`: Tendon transmission efficiency measurements and `transmission_test.py` to calculate friction coefficients ($\mu$).
+- `motor_performance_test/`: Current and force measurements for XL330 and XL430 servos.
+- `finger_mount_test/`: Structural and mechanical load data for the finger mount.
+- `payload_test/`: Pull-force test data across 11 test shapes (`test_objects.csv` describes dimensions and weights).
+- `success_rate/`: Grasp trials (`data_succes.csv`) on real everyday objects.
 
-```bash
-pio run            # build
-pio run -t upload   # build + flash the Arduino Uno
-pio device monitor  # open a serial monitor
-```
+---
 
-**Before flashing:** connect the Arduino Uno via USB, with the DYNAMIXEL Shield stacked on top
-and the servo power supply connected (the servos don't need to be powered to upload code, but
-they must be powered for the firmware to get past `dxl_init()`, which blocks in a `while` loop
-pinging the motors until they respond).
+## 5. Potential Improvements
 
-### DYNAMIXEL servo setup (one-time, per servo)
+If you're picking up this project for a semester project or thesis, here are several clear areas where you can take it further:
 
-The firmware expects the extensor servo at **ID 8** and the flexor servo at **ID 9**, both at
-protocol 2.0 and a bus baud rate of **1,000,000 bps** (`dxl.begin(1000000)` in
-`dynamixel_control.cpp`). Before first use, set each servo's ID with
-[DYNAMIXEL Wizard 2.0](https://emanual.robotis.com/docs/en/software/dynamixel/dynamixel_wizard2/)
-(connect each servo individually via a U2D2 or the shield) — the default factory ID is usually
-`1`, so both servos need to be re-IDed before being wired into the same bus.
+### Hardware Improvements
+- **Miniaturization & Cleaner Enclosure:** Redesign the motor box to be smaller and more self-contained. Adding buttons directly to the enclosure would make manual testing much smoother (for example, triggering test routines or toggling live serial output).
+- **Easier Finger Assembly:** Threading the tendons and securing the fingers to the mount currently requires a very specific touch and patience. A more modular, snap-in joint design would save a lot of headaches.
+- **Self-Contained Power:** The prototype currently relies on a 5V benchtop power supply and a tethered laptop. Integrating a small internal regulator or battery pack would make the setup truly portable.
+- **Tendon Terminations:** Finding a cleaner mechanical method to clamp the tendon ends (rather than manual knots) would make string tensioning and length adjustment much more repeatable.
+- **User interface:** A simple GUI on a laptop or tablet could allow users to control the gripper, run test routines, and visualize live data without needing to dig into the Arduino code.
 
-### Debug/monitor output
+### Control Improvements
+- **Scientifically Grounded Control:** The current firmware uses a tuned open-loop control. A great next step would be modeling the gripper movements analytically—for instance, using the approach from:
+  > Z. Wang and N. M. Freris, *"Exploiting Frictional Effects to Reproduce Octopus-Like Reaching Movements with a Cable-Driven Spiral Robot,"* 2024 IEEE 7th International Conference on Soft Robotics (RoboSoft), San Diego, CA, USA, 2024, pp. 537-542.
+- **Grasp Detection:** Use live motor current readings to detect when the fingers touch an object and stop pulling automatically.
 
-Because the Arduino Uno only has one hardware UART, and that UART is used for the DYNAMIXEL
-bus, debug printing goes over a `SoftwareSerial` port instead (see `serial_config.h`/`.cpp`,
-pins defined by `DXL_SHIELD_UART_RX`/`DXL_SHIELD_UART_TX` in `config.h`). Open the serial
-monitor at **115200 baud** to see the tab-separated debug stream: per-servo current, position,
-PWM and velocity, load cell reading(s), current grip state, and grip round counter — printed
-every `SAMPLING_PERIOD_MS` (100 ms by default).
+---
 
-### Key tunables in `config.h`
+## Notes for the Next Student
 
-- `MAX_CURRENT` / `MAX_PWM` — hard current/PWM limits written to the servos on init
-- `debugLoadCells` — set to `true` to enable HX711 reading/logging
-- `*_FLEX_*` / `*_EXTE_*` groups (`OPEN_`, `CLOSING_`, `TIGHTEN_`, `HOLDING_`, `RELEASING_`) —
-  per grip-state PWM slopes and limits driving the state machine in `dxl_update_state()`
-- `C_LOAD_CELL_SCALE` — HX711 calibration factor (will need re-calibrating for a new load cell)
+Don't hesitate to reach out, if you have any questions about the project. We are happy to help you get started and point you in the right direction.
 
-## 3. Electronics wiring
-
-| Signal | Arduino/Shield pin | Defined as |
-|---|---|---|
-| DYNAMIXEL bus (via shield, hardware Serial) | — | handled by the shield |
-| Debug UART RX/TX (SoftwareSerial) | 7 / 8 | `DXL_SHIELD_UART_RX` / `DXL_SHIELD_UART_TX` |
-| DYNAMIXEL direction pin | 2 | `DXL_DIR_PIN` |
-| Grip toggle button (to GND, `INPUT_PULLUP`) | 4 | `BTN_PIN` |
-| HX711 clock | 5 | `ABC_LOAD_CELL_CLK` |
-| HX711 data | 6 | `C_LOAD_CELL_DT` |
-| Oscilloscope/debug timing pins | 9 / 10 | `SCOPE_PIN_A` / `SCOPE_PIN_B` |
-
-**Power:** the DYNAMIXEL Shield needs its own external power input (separate from the Arduino's
-USB power) for the servos — connect a supply matching your servos' rated voltage to the
-shield's power jack/terminal (check the servo datasheet; different DYNAMIXEL X-series models
-have different voltage ranges, so don't assume 12V is safe for every servo without checking
-first). USB alone will not power the motors and `dxl_init()` will hang forever waiting for a
-ping response.
-
-## 4. Test data (`raw_data/`)
-
-| Folder | Contents |
-|---|---|
-| `motor_performance_test/` | Logged current/PWM/load traces for the XL330 and XL430 servos under different PWM/duration settings |
-| `finger_mount_test/` | Finger mount test data |
-| `transmission_test/` | Tendon transmission efficiency data, plus `transmission_test.py` — computes the static friction coefficient (`mu_static`) from input/output force ratios and plots it |
-| `payload_test/` | Grip trials against a set of test objects (`test_objects.csv` describes shape/dimensions/mass/surface of each object); filenames encode object id, sensor (`P`/`W`), fixture (`F`) and object (`X`/`L`/`S`) |
-| `success_rate/` | Grasp success-rate trials (`data_succes.csv`) across different test objects/orientations |
-
-## Notes for the next student
-
-- The old, pre-PlatformIO firmware (`code/main_firmware_version/`) has been superseded by the
-  PlatformIO project in `code/bsc-gripper/` — use the latter.
-- Consider committing your DYNAMIXEL Wizard configuration/settings or a short calibration
-  procedure once you've re-derived it, so servo setup doesn't have to be reverse-engineered
-  from the firmware again.
-- `main.cpp` has commented-out calls to a `dxl_auto_calibration()` step that is not defined
-  anywhere in this repo (in current code or history) — it looks like a planned-but-never-added
-  feature rather than something that was removed. Motors are currently expected to already be
-  at a known/repeatable start position when `GRIP_OPEN` is reached.
+- **Mads August Claussen**
+- **Emil Broge Johansen**
