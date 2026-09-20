@@ -16,7 +16,7 @@ https://github.com/user-attachments/assets/c0556c12-12d1-4bf8-a20e-e9f583e94eb2
 
 To keep the hand as light as possible, we separated the "muscles" from the "fingers":
 
-![Gripper System Overview](documentation/overview-block-diagram.png|500)
+![Gripper System Overview|500](documentation/overview-block-diagram.png)
 
 - **External Actuator Box:** Two smart servo motors sit away from the moving arm. One pulls the "flexor" tendon to close the grip, and the other pulls an "extensor" tendon to open it and add stiffness.
 - **Bowden Cable Transmission:** The pulling force travels through slick PTFE tubes via strong polyethylene cords (Dyneema).
