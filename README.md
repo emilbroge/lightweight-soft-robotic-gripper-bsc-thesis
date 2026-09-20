@@ -6,9 +6,7 @@ The goal of this project was to design a compliant gripper that weighs almost no
 
 This repository contains the 3D printing/casting files, the Arduino firmware, and the raw experimental data collected for the gripper. It is written so that a future student can pick the project back up: print/cast the parts, wire up the electronics, flash the firmware, and reproduce (or extend) the tests.
 
-<video src="documentation/gripper-showcase-vid.mp4" controls="controls" muted="muted" style="max-width: 100%;">
-  Your browser does not support the video tag.
-</video>
+https://github.com/user-attachments/assets/c0556c12-12d1-4bf8-a20e-e9f583e94eb2
 
 *(If you are viewing this locally, check out `documentation/gripper-showcase-vid.mp4` and `documentation/gripper_being_operated_and_powered_off.mp4` to see it in action!)*
 
@@ -27,9 +25,9 @@ To keep the hand as light as possible, we separated the "muscles" from the "fing
 - **Silicone Skin:** A soft silicone layer gives the fingers the grip they need so objects don't slip out.
 
 **Below the gripper can be seen being operated.**
-<video src="documentation/gripper-showcase-vid.mp4" controls="controls" muted="muted" style="max-width: 100%;">
-  Your browser does not support the video tag.
-</video>
+
+https://github.com/user-attachments/assets/960f5932-b7c9-4243-a79a-f50e997e1e70
+
 ---
 
 ## 2. Hardware Build Guide
