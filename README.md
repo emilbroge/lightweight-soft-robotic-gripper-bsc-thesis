@@ -35,10 +35,10 @@ https://github.com/user-attachments/assets/960f5932-b7c9-4243-a79a-f50e997e1e70
 The entire physical build uses affordable 3D-printed parts, standard hobbyist bearings, and two smart servos. The brain of the setup is an Arduino Uno fitted with a motor shield.
 
 All step-by-step guides and CAD drawings are organized in the `documentation/` folder:
-- **Parts List & Costs:** See the [Bill of Materials (PDF)](documentation/bill_of_materials_compressed.pdf)
-- **Step-by-Step Mechanical Assembly:** See the [Assembly Guide (PDF)](documentation/assembly_instructions_compressed.pdf)
+- **Parts List & Costs:** See the [Bill of Materials (PDF)](documentation/bill_of_materials.pdf)
+- **Step-by-Step Mechanical Assembly:** See the [Assembly Guide (PDF)](documentation/assembly_instructions.pdf)
 - **Fabrication & Print Specs:** See the [Hardware & Fabrication Guide](documentation/README.md#1-3d-printing--fabrication)
-- **Full Thesis Report:** Read [Full BSc Report (PDF)](documentation/Full_BSc_Report_compressed_prepress.pdf) for the academic background, math, and design decisions.
+- **Full Thesis Report:** Read [Full BSc Report (PDF)](documentation/Full_BSc_Report.pdf) for the academic background, math, and design decisions.
 
 ---
 
